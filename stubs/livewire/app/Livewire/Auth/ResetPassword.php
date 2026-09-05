@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Livewire\Auth;
+
+use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as PasswordRule;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+
+#[Layout('layouts.guest')]
+class ResetPassword extends Component
+{
+    public string $token = '';
+    public string $email = '';
+    public string $password = '';
+    public string $password_confirmation = '';
+
+    public function mount(string $token): void
+    {
+        $this->token = $token;
+        $this->email = request()->query('email', '');
+    }
+
+    public function resetPassword(): void
+    {
+        $this->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $this->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user) {
+                $user->forceFill([
+                    'password' => Hash::make($this->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            $this->addError('email', trans($status));
+
+            return;
+        }
+
+        $this->redirect(route('login', absolute: false), navigate: true);
+    }
+
+    public function render()
+    {
+        return view('livewire.auth.reset-password');
+    }
+}

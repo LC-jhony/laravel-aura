@@ -1,0 +1,12 @@
+providers:
+  - Vendor\Aura\AuraServiceProvider
+
+workbench:
+  start: '/'
+  install: true
+  discovers:
+    web: true
+    api: false
+    commands: true
+    components: true
+    views: true
