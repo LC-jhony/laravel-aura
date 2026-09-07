@@ -8,18 +8,18 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
         @include('layouts.navigation')
 
         @isset($header)
-            <header class="bg-white shadow dark:bg-gray-800">
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <header class="border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+                <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
         @endisset
 
-        <main>{{ $slot }}</main>
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{{ $slot }}</main>
     </div>
 </body>
 </html>
