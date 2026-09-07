@@ -1,5 +1,5 @@
 <?php
 
-namespace Vendor\Aura;
+namespace Laravel\Aura;
 
 class Aura {}

@@ -1,10 +1,10 @@
 <?php
 
-namespace Vendor\Aura\Tests;
+namespace Laravel\Aura\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Laravel\Aura\AuraServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Vendor\Aura\AuraServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -13,7 +13,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Vendor\\Aura\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Laravel\\Aura\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 

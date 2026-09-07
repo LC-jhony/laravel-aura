@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendor\Aura\Console;
+namespace Laravel\Aura\Console;
 
 use Illuminate\Console\Command;
 

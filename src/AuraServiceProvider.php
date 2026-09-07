@@ -1,12 +1,12 @@
 <?php
 
-namespace Vendor\Aura;
+namespace Laravel\Aura;
 
 use Illuminate\Console\AboutCommand;
+use Laravel\Aura\Console\InstallCommand;
+use Laravel\Aura\Console\StubsPublishCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Vendor\Aura\Console\InstallCommand;
-use Vendor\Aura\Console\StubsPublishCommand;
 
 class AuraServiceProvider extends PackageServiceProvider
 {

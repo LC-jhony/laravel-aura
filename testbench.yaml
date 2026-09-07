@@ -1,5 +1,5 @@
 providers:
-  - Vendor\Aura\AuraServiceProvider
+  - Laravel\Aura\AuraServiceProvider
 
 workbench:
   start: '/'

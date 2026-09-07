@@ -17,7 +17,7 @@ por stack), con **Tailwind CSS 4** en todos los stacks con frontend.
 ## Instalación
 
 ```bash
-composer require vendor/laravel-aura --dev
+composer require laravel/aura --dev
 php artisan aura:install blade
 # o: php artisan aura:install livewire --pest
 # o: php artisan aura:install react --ssr --typescript

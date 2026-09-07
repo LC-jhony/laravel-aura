@@ -1,16 +1,16 @@
 <?php
 
-namespace Vendor\Aura\Console;
+namespace Laravel\Aura\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Laravel\Aura\Console\Concerns\CopiesTests;
+use Laravel\Aura\Console\Concerns\InstallsApiStack;
+use Laravel\Aura\Console\Concerns\InstallsBladeStack;
+use Laravel\Aura\Console\Concerns\InstallsInertiaStacks;
+use Laravel\Aura\Console\Concerns\InstallsLivewireStack;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-use Vendor\Aura\Console\Concerns\CopiesTests;
-use Vendor\Aura\Console\Concerns\InstallsApiStack;
-use Vendor\Aura\Console\Concerns\InstallsBladeStack;
-use Vendor\Aura\Console\Concerns\InstallsInertiaStacks;
-use Vendor\Aura\Console\Concerns\InstallsLivewireStack;
 
 use function Laravel\Prompts\callout;
 use function Laravel\Prompts\confirm;

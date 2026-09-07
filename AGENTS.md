@@ -45,5 +45,5 @@ Run all three locally before pushing. `pint --test` is read-only; `composer form
 
 - Code style: Pint `laravel` preset (`pint.json`).
 - `.editorconfig`: 4-space indent for PHP, 2-space for JSON/YAML.
-- Namespace: `Vendor\Aura\` (PSR-4 in `composer.json`).
+- Namespace: `Laravel\Aura\` (PSR-4 in `composer.json`).
 - Do not commit `composer.lock` or `build/` artifacts.

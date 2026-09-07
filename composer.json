@@ -1,8 +1,8 @@
 {
-    "name": "vendor/laravel-aura",
+    "name": "laravel/aura",
     "description": "Scaffolding de autenticación para Laravel 13 — clon fiel de laravel/breeze (blade, livewire, react, vue, api) con Tailwind CSS 4.",
     "keywords": ["laravel", "auth", "aura", "blade", "livewire", "react", "vue", "inertia", "tailwind"],
-    "homepage": "https://github.com/vendor/laravel-aura",
+    "homepage": "https://github.com/laravel/aura",
     "license": "MIT",
     "authors": [
         {
@@ -32,12 +32,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Vendor\\Aura\\": "src/"
+            "Laravel\\Aura\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vendor\\Aura\\Tests\\": "tests/",
+            "Laravel\\Aura\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -52,10 +52,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Vendor\\Aura\\AuraServiceProvider"
+                "Laravel\\Aura\\AuraServiceProvider"
             ],
             "aliases": {
-                "Aura": "Vendor\\Aura\\Facades\\Aura"
+                "Aura": "Laravel\\Aura\\Facades\\Aura"
             }
         }
     },

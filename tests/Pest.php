@@ -1,5 +1,5 @@
 <?php
 
-use Vendor\Aura\Tests\TestCase;
+use Laravel\Aura\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

@@ -1,16 +1,16 @@
 <?php
 
-namespace Vendor\Aura\Facades;
+namespace Laravel\Aura\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Vendor\Aura\Aura
+ * @see \Laravel\Aura\Aura
  */
 class Aura extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Vendor\Aura\Aura::class;
+        return \Laravel\Aura\Aura::class;
     }
 }

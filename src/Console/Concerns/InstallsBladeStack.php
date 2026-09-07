@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendor\Aura\Console\Concerns;
+namespace Laravel\Aura\Console\Concerns;
 
 use Illuminate\Filesystem\Filesystem;
 
