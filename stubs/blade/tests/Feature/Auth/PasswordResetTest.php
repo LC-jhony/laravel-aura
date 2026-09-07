@@ -25,6 +25,7 @@ test('reset password screen can be rendered', function () {
 
     Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
         $this->get('/reset-password/'.$notification->token)->assertOk();
+
         return true;
     });
 });
@@ -44,6 +45,7 @@ test('password can be reset with valid token', function () {
         ]);
 
         $response->assertSessionHasNoErrors();
+
         return true;
     });
 });

@@ -19,17 +19,24 @@ class AuraServiceProvider extends PackageServiceProvider
             ->hasCommand(StubsPublishCommand::class);
     }
 
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->bind(Aura::class, fn () => new Aura);
+    }
+
     public function packageBooted(): void
     {
-        // NOTA: este archivo vive en package_root/src/, así que solo hace
-        // falta subir UN nivel para llegar a package_root/stubs.
         $this->publishes([
             __DIR__.'/../stubs' => base_path('stubs/aura'),
         ], 'aura-stubs');
 
-        AboutCommand::add('Aura', fn () => [
-            'Versión' => '1.0.0',
-            'Stacks'  => 'blade, livewire, react, vue, api (Tailwind CSS 4)',
-        ]);
+        if (class_exists(AboutCommand::class)) {
+            AboutCommand::add('Aura', fn () => [
+                'Versión' => '1.0.0',
+                'Stacks' => 'blade, livewire, react, vue, api (Tailwind CSS 4)',
+            ]);
+        }
     }
 }

@@ -46,7 +46,7 @@ trait InstallsInertiaStacks
         $ext = $frontend === 'vue' ? 'vue' : ($isTypescript ? 'tsx' : 'jsx');
 
         $this->installTailwindV4(
-            viteInputs: ["resources/css/app.css", "resources/js/app.{$ext}"],
+            viteInputs: ['resources/css/app.css', "resources/js/app.{$ext}"],
             extraDevDeps: $this->inertiaNodeDependencies($frontend, $isTypescript),
         );
 
@@ -67,8 +67,8 @@ trait InstallsInertiaStacks
         if ($frontend === 'react') {
             $deps = [
                 '@inertiajs/react' => '^2.0',
-                'react'            => '^19.0',
-                'react-dom'        => '^19.0',
+                'react' => '^19.0',
+                'react-dom' => '^19.0',
                 '@vitejs/plugin-react' => '^4.3',
             ];
 
@@ -83,7 +83,7 @@ trait InstallsInertiaStacks
 
         return [
             '@inertiajs/vue3' => '^2.0',
-            'vue'             => '^3.5',
+            'vue' => '^3.5',
             '@vitejs/plugin-vue' => '^5.1',
         ];
     }
@@ -105,7 +105,7 @@ trait InstallsInertiaStacks
         }
 
         $needle = '->withMiddleware(function (Middleware $middleware) {';
-        $replacement = $needle."\n        $middleware->web(append: [\n            \\App\\Http\\Middleware\\HandleInertiaRequests::class,\n        ]);\n";
+        $replacement = $needle."\n        "."\$middleware->web(append: [\n            \\App\\Http\\Middleware\\HandleInertiaRequests::class,\n        ]);\n";
 
         if (str_contains($contents, $needle)) {
             file_put_contents($kernelFile, str_replace($needle, $replacement, $contents));

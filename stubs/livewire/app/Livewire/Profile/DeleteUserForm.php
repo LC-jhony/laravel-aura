@@ -8,6 +8,7 @@ use Livewire\Component;
 class DeleteUserForm extends Component
 {
     public bool $confirmingUserDeletion = false;
+
     public string $password = '';
 
     public function confirmUserDeletion(): void

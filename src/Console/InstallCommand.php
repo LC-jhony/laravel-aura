@@ -15,8 +15,6 @@ use Vendor\Aura\Console\Concerns\InstallsLivewireStack;
 use function Laravel\Prompts\callout;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\form;
-use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
 
 /**
@@ -109,20 +107,20 @@ class InstallCommand extends Command
             ->select(
                 label: '¿Qué stack de Aura quieres instalar?',
                 options: [
-                    'blade'    => 'Blade (controladores tradicionales)',
+                    'blade' => 'Blade (controladores tradicionales)',
                     'livewire' => 'Livewire (componentes de página, sin Volt)',
-                    'react'    => 'React (Inertia)',
-                    'vue'      => 'Vue (Inertia)',
-                    'api'      => 'Solo API (Sanctum, sin frontend)',
+                    'react' => 'React (Inertia)',
+                    'vue' => 'Vue (Inertia)',
+                    'api' => 'Solo API (Sanctum, sin frontend)',
                 ],
                 name: 'stack'
             )
             ->multiselect(
                 label: 'Opciones adicionales',
                 options: [
-                    'dark'       => 'Modo oscuro',
-                    'pest'       => 'Tests con Pest',
-                    'ssr'        => 'Soporte Inertia SSR (react/vue)',
+                    'dark' => 'Modo oscuro',
+                    'pest' => 'Tests con Pest',
+                    'ssr' => 'Soporte Inertia SSR (react/vue)',
                     'typescript' => 'TypeScript (react/vue)',
                 ],
                 name: 'options',
@@ -130,7 +128,7 @@ class InstallCommand extends Command
                 hint: 'Opcional. Presiona Espacio para seleccionar, Enter para continuar.'
             )
             ->confirm(
-                label: fn (array $responses) => "¿Instalar stack [{$responses['stack']}] con las opciones seleccionadas?",
+                label: '¿Confirmar instalación?',
                 name: 'confirm'
             )
             ->submit();
@@ -170,17 +168,18 @@ class InstallCommand extends Command
 
         // 1. Stubs comunes
         spin(
-            label: 'Copiando stubs comunes...',
+            message: 'Copiando stubs comunes...',
             callback: fn () => $this->installCommonStubs()
         );
 
         // 2. Delega en el trait correspondiente al stack elegido.
         $method = match ($stack) {
-            'blade'    => 'installBladeStack',
+            'blade' => 'installBladeStack',
             'livewire' => 'installLivewireStack',
-            'react'    => 'installReactStack',
-            'vue'      => 'installVueStack',
-            'api'      => 'installApiStack',
+            'react' => 'installReactStack',
+            'vue' => 'installVueStack',
+            'api' => 'installApiStack',
+            default => throw new \InvalidArgumentException("Stack desconocido: {$stack}"),
         };
 
         $this->{$method}();
@@ -244,8 +243,7 @@ class InstallCommand extends Command
 
         $composer = base_path('composer.json');
 
-        return $composer !== false
-            && str_contains((string) file_get_contents($composer), 'pestphp/pest');
+        return str_contains((string) file_get_contents($composer), 'pestphp/pest');
     }
 
     // ------------------------------------------------------------------
@@ -260,7 +258,7 @@ class InstallCommand extends Command
         $this->updateNodePackages(function (array $packages) use ($extraDevDeps): array {
             return [
                 '@tailwindcss/vite' => '^4.0',
-                'tailwindcss'       => '^4.0',
+                'tailwindcss' => '^4.0',
             ] + $extraDevDeps + $packages;
         });
 

@@ -13,7 +13,7 @@ class StubsPublishCommand extends Command
     public function handle(): int
     {
         $this->call('vendor:publish', [
-            '--tag'   => 'aura-stubs',
+            '--tag' => 'aura-stubs',
             '--force' => $this->option('force'),
         ]);
 

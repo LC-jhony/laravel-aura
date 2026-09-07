@@ -1,9 +1,9 @@
 <?php
 
-use Vendor\Aura\Console\InstallCommand;
+use Illuminate\Contracts\Console\Kernel;
 
 it('registers the aura:install command', function () {
-    expect(app(\Illuminate\Contracts\Console\Kernel::class)->all())
+    expect(app(Kernel::class)->all())
         ->toHaveKey('aura:install');
 });
 
