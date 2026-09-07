@@ -14,6 +14,7 @@ class AuraServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('aura')
+            ->hasConfigFile()
             ->hasCommand(InstallCommand::class)
             ->hasCommand(StubsPublishCommand::class);
     }

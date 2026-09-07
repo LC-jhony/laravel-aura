@@ -16,6 +16,8 @@ vendor/bin/testbench serve   # serve workbench/ app
 
 ## CI order (`.github/workflows/tests.yml`)
 
+Matrix: PHP 8.3/8.4 × Laravel 13.
+
 1. `vendor/bin/pint --test` (format check, must pass with no diffs)
 2. `composer analyse` (phpstan level 5)
 3. `composer test` (pest)
