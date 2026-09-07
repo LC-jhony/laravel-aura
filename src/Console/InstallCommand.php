@@ -3,10 +3,7 @@
 namespace Vendor\Aura\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 use Vendor\Aura\Console\Concerns\CopiesTests;
@@ -15,8 +12,12 @@ use Vendor\Aura\Console\Concerns\InstallsBladeStack;
 use Vendor\Aura\Console\Concerns\InstallsInertiaStacks;
 use Vendor\Aura\Console\Concerns\InstallsLivewireStack;
 
+use function Laravel\Prompts\callout;
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\form;
+use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
 
 /**
  * Clon fiel de la arquitectura de laravel/breeze 2.x:
@@ -24,7 +25,7 @@ use function Laravel\Prompts\select;
  *
  * @see https://github.com/laravel/breeze/blob/2.x/src/Console/InstallCommand.php
  */
-class InstallCommand extends Command implements PromptsForMissingInput
+class InstallCommand extends Command
 {
     use CopiesTests;
     use InstallsApiStack;
@@ -33,7 +34,7 @@ class InstallCommand extends Command implements PromptsForMissingInput
     use InstallsLivewireStack;
 
     protected $signature = 'aura:install
-                            {stack : El stack a instalar (blade,livewire,react,vue,api)}
+                            {stack? : El stack a instalar (blade,livewire,react,vue,api)}
                             {--dark : Incluir soporte de modo oscuro}
                             {--pest : Forzar stubs de tests con Pest}
                             {--ssr : Instalar soporte de Inertia SSR (react/vue)}
@@ -44,6 +45,21 @@ class InstallCommand extends Command implements PromptsForMissingInput
     protected $description = 'Instalar la estructura de autenticación Aura (blade, livewire, react, vue o api) con Tailwind CSS 4';
 
     public function handle(): int
+    {
+        // Si se pasa el stack por CLI, usar flujo directo
+        if ($this->argument('stack')) {
+            return $this->installFromCli();
+        }
+
+        // Wizard interactivo con Laravel Prompts
+        return $this->installFromWizard();
+    }
+
+    // ------------------------------------------------------------------
+    // CLI directo (con flags)
+    // ------------------------------------------------------------------
+
+    protected function installFromCli(): int
     {
         $stack = $this->argument('stack');
 
@@ -57,10 +73,106 @@ class InstallCommand extends Command implements PromptsForMissingInput
             return self::FAILURE;
         }
 
+        return $this->installStack($stack, $this->getOptionsFromFlags());
+    }
+
+    protected function getOptionsFromFlags(): array
+    {
+        $options = [];
+
+        if ($this->option('dark')) {
+            $options[] = 'dark';
+        }
+
+        if ($this->option('pest')) {
+            $options[] = 'pest';
+        }
+
+        if ($this->option('ssr')) {
+            $options[] = 'ssr';
+        }
+
+        if ($this->option('typescript')) {
+            $options[] = 'typescript';
+        }
+
+        return $options;
+    }
+
+    // ------------------------------------------------------------------
+    // Wizard interactivo (Laravel Prompts form)
+    // ------------------------------------------------------------------
+
+    protected function installFromWizard(): int
+    {
+        $responses = form()
+            ->select(
+                label: '¿Qué stack de Aura quieres instalar?',
+                options: [
+                    'blade'    => 'Blade (controladores tradicionales)',
+                    'livewire' => 'Livewire (componentes de página, sin Volt)',
+                    'react'    => 'React (Inertia)',
+                    'vue'      => 'Vue (Inertia)',
+                    'api'      => 'Solo API (Sanctum, sin frontend)',
+                ],
+                name: 'stack'
+            )
+            ->multiselect(
+                label: 'Opciones adicionales',
+                options: [
+                    'dark'       => 'Modo oscuro',
+                    'pest'       => 'Tests con Pest',
+                    'ssr'        => 'Soporte Inertia SSR (react/vue)',
+                    'typescript' => 'TypeScript (react/vue)',
+                ],
+                name: 'options',
+                required: false,
+                hint: 'Opcional. Presiona Espacio para seleccionar, Enter para continuar.'
+            )
+            ->confirm(
+                label: fn (array $responses) => "¿Instalar stack [{$responses['stack']}] con las opciones seleccionadas?",
+                name: 'confirm'
+            )
+            ->submit();
+
+        if (! $responses['confirm']) {
+            $this->components->warn('Instalación cancelada.');
+
+            return self::FAILURE;
+        }
+
+        // Filtrar opciones no válidas para el stack seleccionado
+        $options = $this->filterOptionsForStack(
+            $responses['stack'],
+            $responses['options']
+        );
+
+        return $this->installStack($responses['stack'], $options);
+    }
+
+    protected function filterOptionsForStack(string $stack, array $options): array
+    {
+        // SSR y TypeScript solo aplican para react/vue
+        if (! in_array($stack, ['react', 'vue'])) {
+            $options = array_diff($options, ['ssr', 'typescript']);
+        }
+
+        return array_values($options);
+    }
+
+    // ------------------------------------------------------------------
+    // Instalación principal
+    // ------------------------------------------------------------------
+
+    protected function installStack(string $stack, array $options): int
+    {
         $this->components->info("Instalando Aura — stack [{$stack}]...");
 
-        // 1. Stubs comunes a todos los stacks (User, CSS base, etc.)
-        $this->installCommonStubs();
+        // 1. Stubs comunes
+        spin(
+            label: 'Copiando stubs comunes...',
+            callback: fn () => $this->installCommonStubs()
+        );
 
         // 2. Delega en el trait correspondiente al stack elegido.
         $method = match ($stack) {
@@ -73,55 +185,25 @@ class InstallCommand extends Command implements PromptsForMissingInput
 
         $this->{$method}();
 
-        $this->components->info('Aura instalado correctamente.');
-
-        if ($stack !== 'api') {
-            $this->components->bulletList([
-                'php artisan serve',
-                'npm run dev',
-            ]);
-        } else {
-            $this->components->bulletList(['php artisan serve']);
-        }
+        // 3. Resumen final
+        callout(
+            label: '¡Aura instalado correctamente!',
+            content: $this->getSuccessMessage($stack),
+            type: 'success'
+        );
 
         return self::SUCCESS;
     }
 
-    /**
-     * Prompts para argumentos ausentes (PromptsForMissingInput).
-     * Igual mecanismo que usa breeze real para preguntar el stack
-     * de forma interactiva si no se pasó como argumento.
-     */
-    protected function promptForMissingArgumentsUsing(): array
+    protected function getSuccessMessage(string $stack): string
     {
-        return [
-            'stack' => fn () => select(
-                label: '¿Qué stack de Aura quieres instalar?',
-                options: [
-                    'blade'    => 'Blade (controladores tradicionales)',
-                    'livewire' => 'Livewire (componentes de página, sin Volt)',
-                    'react'    => 'React (Inertia)',
-                    'vue'      => 'Vue (Inertia)',
-                    'api'      => 'Solo API (Sanctum, sin frontend)',
-                ],
-            ),
-        ];
-    }
+        $commands = ['php artisan serve'];
 
-    public function interact(InputInterface $input, OutputInterface $output): void
-    {
-        parent::interact($input, $output);
-
-        if ($input->getArgument('stack') !== 'react' && $input->getArgument('stack') !== 'vue') {
-            return;
+        if ($stack !== 'api') {
+            $commands[] = 'npm run dev';
         }
 
-        if ($this->option('ssr')) {
-            return;
-        }
-
-        collect(['ssr' => '¿Instalar soporte de Inertia SSR?'])
-            ->each(fn ($question, $option) => $input->setOption($option, confirm($question, default: false)));
+        return 'Ejecuta: '.implode(' y ', $commands);
     }
 
     // ------------------------------------------------------------------

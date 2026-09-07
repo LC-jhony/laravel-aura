@@ -49,6 +49,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Installation Options
+    |--------------------------------------------------------------------------
+    |
+    | Additional options available during installation. These can be
+    | selected via the interactive wizard or passed as CLI flags.
+    |
+    */
+
+    'options' => [
+        'dark' => [
+            'label' => 'Modo oscuro',
+            'flag' => '--dark',
+        ],
+        'pest' => [
+            'label' => 'Tests con Pest',
+            'flag' => '--pest',
+        ],
+        'ssr' => [
+            'label' => 'Soporte Inertia SSR',
+            'flag' => '--ssr',
+            'stacks' => ['react', 'vue'],
+        ],
+        'typescript' => [
+            'label' => 'TypeScript',
+            'flag' => '--typescript',
+            'stacks' => ['react', 'vue'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Tailwind CSS Version
     |--------------------------------------------------------------------------
     |
